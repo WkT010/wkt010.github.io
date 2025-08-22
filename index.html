@@ -58,8 +58,8 @@
             cursor: pointer;
         }
 
-        .payment-page {
-            background-color: #f9f9f9;
+        .aboutus {
+            background-image: linear-gradient(to bottom, #036ee9, #66cfff), url("https://www.kryptex.com/static/v2/img/assets/png/pat-wb-default-2.3810b922ea02.png");
             padding: 2em;
             text-align: center;
         }
@@ -68,7 +68,7 @@
             background-color: white;
             padding: 2em;
             border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px #4aa7ff;
         }
     </style>
 </head>
@@ -81,7 +81,7 @@
     <div class="nav">
         <a href="https://www.ccw.site/topic/Onesoft%E5%B7%A5%E4%BD%9C%E5%AE%A4%E5%8E%9F%E5%88%9B">西瓜创客官方星球</a>
         <a href="./pht">查看和购买Phanton OS</a>
-        <a href="#features">关于我们</a>
+        <a href="#aboutus">关于我们</a>
     </div>
 
     <div class="content">
@@ -101,50 +101,11 @@
             </div>
         </section>
 
-        <section id="pricing">
-            <h2>购买选项</h2>
-            <div class="price-card">
-                <h3>个人版</h3>
-                <p>价格: 99元</p>
-                <button class="buy-button" onclick="redirectToPayment('personal')">立即购买</button>
-            </div>
-            <div class="price-card">
-                <h3>企业版</h3>
-                <p>价格: 999元</p>
-                <button class="buy-button" onclick="redirectToPayment('enterprise')">立即购买</button>
-            </div>
-        </section>
     </div>
 
-    <div class="payment-page" id="payment">
-        <h2>支付页面</h2>
-        <div class="payment-form">
-            <form id="paymentForm">
-                <input type="hidden" name="order_id" id="order_id">
-                <input type="hidden" name="amount" id="amount">
-                <input type="hidden" name="product_id" id="product_id">
-                <button type="submit" class="buy-button">支付宝支付</button>
-            </form>
-        </div>
+    <div class="aboutus" id="dirC01">
+        <font face="幼圆"><h2>关于我们</h2></font>
+        <h3>XXX. Descriptions...</h3>
     </div>
-
-    <script>
-        function redirectToPayment(version) {
-            // 生成订单信息
-            const orderId = Date.now();
-            const amount = version === 'personal' ? 99 : 999;
-            const productId = version === 'personal' ? 'PHC-PERSONAL' : 'PHC-ENTERPRISE';
-
-            // 填写订单信息
-            document.getElementById('order_id').value = orderId;
-            document.getElementById('amount').value = amount;
-            document.getElementById('product_id').value = productId;
-
-            // 提交表单到支付宝支付页面
-            document.getElementById('paymentForm').action = 'https://api.alipay.com/gateway.do';
-            document.getElementById('paymentForm').method = 'POST';
-            document.getElementById('paymentForm').submit();
-        }
-    </script>
 </body>
 </html>
