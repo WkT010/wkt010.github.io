@@ -1,1 +1,87 @@
-
+{
+  "storeName": "Nautilus Electronics Store",
+  "lastUpdated": "2023-12-15",
+  "currency": "USDT/BTC",
+  "products": [
+    {
+      "id": 1,
+      "name": "ASUS ROG Maximus Z790",
+      "category": "Motherboards",
+      "description": "Intel Z790 chipset, LGA 1700 socket, DDR5 support, PCIe 5.0",
+      "priceUSDT": 649.99,
+      "priceBTC": 0.0185,
+      "icon": "fas fa-microchip",
+      "badge": "Best Seller"
+    },
+    {
+      "id": 2,
+      "name": "AMD Ryzen 9 7950X",
+      "category": "CPU",
+      "description": "16 cores, 32 threads, 5.7 GHz Max Boost, AM5 socket",
+      "priceUSDT": 699.99,
+      "priceBTC": 0.0199,
+      "icon": "fas fa-tachometer-alt",
+      "badge": "New"
+    },
+    {
+      "id": 3,
+      "name": "NVIDIA RTX 4090 Founders Edition",
+      "category": "GPU",
+      "description": "24GB GDDR6X, DLSS 3, Ada Lovelace Architecture",
+      "priceUSDT": 1599.99,
+      "priceBTC": 0.0455,
+      "icon": "fas fa-gamepad",
+      "badge": "Limited Stock"
+    },
+    {
+      "id": 4,
+      "name": "Corsair Dominator Platinum RGB 64GB",
+      "category": "RAM",
+      "description": "DDR5 6400MHz, CL32, Intel XMP 3.0 certified",
+      "priceUSDT": 349.99,
+      "priceBTC": 0.0099,
+      "icon": "fas fa-memory",
+      "badge": "RGB"
+    },
+    {
+      "id": 5,
+      "name": "Samsung 990 Pro 2TB NVMe SSD",
+      "category": "SSD",
+      "description": "PCIe 4.0, 7450 MB/s read, 6900 MB/s write",
+      "priceUSDT": 179.99,
+      "priceBTC": 0.0051,
+      "icon": "fas fa-hdd",
+      "badge": "Fastest"
+    },
+    {
+      "id": 6,
+      "name": "Seagate IronWolf Pro 16TB",
+      "category": "HDD",
+      "description": "NAS hard drive, 7200 RPM, 256MB cache, CMR technology",
+      "priceUSDT": 299.99,
+      "priceBTC": 0.0085,
+      "icon": "fas fa-hdd",
+      "badge": "NAS Ready"
+    },
+    {
+      "id": 7,
+      "name": "Corsair RM1000x SHIFT",
+      "category": "PSU",
+      "description": "1000W, 80 Plus Gold, fully modular, ATX 3.0 compatible",
+      "priceUSDT": 229.99,
+      "priceBTC": 0.0065,
+      "icon": "fas fa-plug",
+      "badge": "ATX 3.0"
+    },
+    {
+      "id": 8,
+      "name": "Noctua NF-A14 PWM Chromax",
+      "category": "Fans",
+      "description": "140mm premium fan, PWM support, ultra-quiet operation",
+      "priceUSDT": 29.99,
+      "priceBTC": 0.00085,
+      "icon": "fas fa-fan",
+      "badge": "Quiet"
+    }
+  ]
+}
