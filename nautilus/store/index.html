@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nautilus Electronics Store</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        :root {
+            --primary: #0a1f3a;
+            --secondary: #1a3d6c;
+            --accent: #00d4ff;
+            --accent-dark: #0099cc;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --success: #28a745;
+            --warning: #ffc107;
+            --error: #dc3545;
+        }
+
+        body {
+            background-color: #f0f4f8;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            font-size: 2.5rem;
+            color: var(--accent);
+        }
+
+        .logo-text h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .logo-text p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .payment-methods {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .crypto-badge {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .crypto-badge.usdt {
+            border: 2px solid #26a17b;
+        }
+
+        .crypto-badge.btc {
+            border: 2px solid #f7931a;
+        }
+
+        /* Navigation */
+        nav {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .category-nav {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .category-btn {
+            background: white;
+            border: 1px solid #e0e0e0;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            color: var(--primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .category-btn:hover, .category-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 212, 255, 0.2);
+        }
+
+        /* Main content */
+        main {
+            padding: 2rem 0;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .section-header h2 {
+            font-size: 1.8rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-icon {
+            color: var(--accent);
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 3rem;
+            min-height: 400px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-image {
+            height: 180px;
+            background: linear-gradient(135deg, #e0f7ff 0%, #f0f4ff 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .product-image i {
+            font-size: 4rem;
+            color: var(--secondary);
+            opacity: 0.8;
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--accent);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .product-content {
+            padding: 1.5rem;
+        }
+
+        .product-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        .product-description {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .product-price {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .price-crypto {
+            font-weight: 700;
+            font-size: 1.4rem;
+            color: var(--accent-dark);
+        }
+
+        .crypto-icon {
+            margin-right: 5px;
+        }
+
+        .price-fiat {
+            color: var(--gray);
+            font-size: 0.9rem;
+            text-decoration: line-through;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .btn-buy {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-buy:hover {
+            background: var(--secondary);
+        }
+
+        .btn-details {
+            background: #f0f4f8;
+            color: var(--primary);
+        }
+
+        .btn-details:hover {
+            background: #e0e7f0;
+        }
+
+        /* Payment Section */
+        .payment-section {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-top: 3rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .payment-section h3 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .wallets {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .wallet-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            background: #f9f9f9;
+        }
+
+        .wallet-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .wallet-icon {
+            font-size: 1.5rem;
+        }
+
+        .usdt-icon {
+            color: #26a17b;
+        }
+
+        .btc-icon {
+            color: #f7931a;
+        }
+
+        .wallet-address {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 12px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            word-break: break-all;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .wallet-network {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-top: 5px;
+        }
+
+        /* Loading and Error States */
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--accent);
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: var(--error);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--error);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .error-message i {
+            font-size: 1.5rem;
+        }
+
+        .data-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 0.75rem 1rem;
+            border-radius: 5px;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary);
+            color: white;
+            padding: 3rem 0 2rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-section h4 {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links a {
+            color: #ccc;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+
+        .copyright {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .category-nav {
+                justify-content: flex-start;
+                overflow-x: auto;
+                padding-bottom: 10px;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-microchip"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>Nautilus Electronics Store</h1>
+                    <p>Premium Computer Hardware for Crypto Enthusiasts</p>
+                </div>
+            </div>
+            <div class="payment-methods">
+                <div class="crypto-badge usdt">
+                    <i class="fab fa-usdt"></i>
+                    <span>USDT Accepted</span>
+                </div>
+                <div class="crypto-badge btc">
+                    <i class="fab fa-btc"></i>
+                    <span>BTC Accepted</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="container category-nav">
+            <button class="category-btn active" data-category="all">
+                <i class="fas fa-th-large"></i> All Products
+            </button>
+            <button class="category-btn" data-category="Motherboards">
+                <i class="fas fa-microchip"></i> Motherboards
+            </button>
+            <button class="category-btn" data-category="CPU">
+                <i class="fas fa-tachometer-alt"></i> CPU
+            </button>
+            <button class="category-btn" data-category="GPU">
+                <i class="fas fa-gamepad"></i> GPU
+            </button>
+            <button class="category-btn" data-category="RAM">
+                <i class="fas fa-memory"></i> RAM
+            </button>
+            <button class="category-btn" data-category="SSD">
+                <i class="fas fa-hdd"></i> SSD
+            </button>
+            <button class="category-btn" data-category="HDD">
+                <i class="fas fa-hdd"></i> HDD
+            </button>
+            <button class="category-btn" data-category="PSU">
+                <i class="fas fa-plug"></i> PSU
+            </button>
+            <button class="category-btn" data-category="Fans">
+                <i class="fas fa-fan"></i> Fans
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- All Products Section (default view) -->
+        <section id="all-products">
+            <div class="section-header">
+                <h2><i class="fas fa-box-open section-icon"></i> Featured Products</h2>
+                <div class="crypto-prices">
+                    <small>Prices in USDT & BTC | Live Crypto Rates Applied</small>
+                </div>
+            </div>
+            
+            <!-- Data source info -->
+            <div class="data-info" id="data-source-info">
+                <i class="fas fa-info-circle"></i>
+                <span>Loading product data from external JSON file...</span>
+            </div>
+            
+            <!-- Loading state -->
+            <div class="loading" id="loading-state">
+                <div class="spinner"></div>
+                <h3>Loading Products...</h3>
+                <p>Please wait while we load the latest hardware catalog</p>
+            </div>
+            
+            <!-- Error state (hidden by default) -->
+            <div class="error-message" id="error-state" style="display: none;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <div>
+                    <h3>Failed to Load Product Data</h3>
+                    <p>We couldn't load the product catalog. Please check your connection or try again later.</p>
+                    <button id="retry-btn" style="margin-top: 10px; background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+                        <i class="fas fa-redo"></i> Retry Loading
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Products container -->
+            <div class="products-grid" id="products-container">
+                <!-- Products will be dynamically loaded here -->
+            </div>
+        </section>
+
+        <!-- Payment Information Section -->
+        <section class="payment-section">
+            <h3><i class="fas fa-wallet"></i> Payment Wallets</h3>
+            <p>Please send exact payment amount to one of the following wallets. Your order will be processed after 3 confirmations.</p>
+            
+            <div class="wallets">
+                <!-- USDT Wallets -->
+                <div class="wallet-card">
+                    <div class="wallet-header">
+                        <i class="fab fa-usdt wallet-icon usdt-icon"></i>
+                        <h4>USDT Payments</h4>
+                    </div>
+                    <div class="wallet-network">BSC Network (BEP-20)</div>
+                    <div class="wallet-address">
+                        0xA6Ddc0D999A37565D9eC8ACABD2BD9783be837DD
+                        <button class="copy-btn" data-address="0xA6Ddc0D999A37565D9eC8ACABD2BD9783be837DD">Copy</button>
+                    </div>
+                    <div class="wallet-network">ETH Network (ERC-20)</div>
+                    <div class="wallet-address">
+                        0xA6Ddc0D999A37565D9eC8ACABD2BD9783be837DD
+                        <button class="copy-btn" data-address="0xA6Ddc0D999A37565D9eC8ACABD2BD9783be837DD">Copy</button>
+                    </div>
+                    <div class="wallet-network">Solana Network</div>
+                    <div class="wallet-address">
+                        FoAW1FnhmizBzdsVtiPorGJT3nnZ7ebBnPCibcBTZP4Y
+                        <button class="copy-btn" data-address="FoAW1FnhmizBzdsVtiPorGJT3nnZ7ebBnPCibcBTZP4Y">Copy</button>
+                    </div>
+                </div>
+                
+                <!-- BTC Wallets -->
+                <div class="wallet-card">
+                    <div class="wallet-header">
+                        <i class="fab fa-btc wallet-icon btc-icon"></i>
+                        <h4>BTC Payments</h4>
+                    </div>
+                    <div class="wallet-network">BTC Main Network</div>
+                    <div class="wallet-address">
+                        bc1q97vu72gpquwvnhlguhznjp4rj97zdp3dkq3v4s
+                        <button class="copy-btn" data-address="bc1q97vu72gpquwvnhlguhznjp4rj97zdp3dkq3v4s">Copy</button>
+                    </div>
+                    <div class="wallet-network">BSC Network (BEP-20)</div>
+                    <div class="wallet-address">
+                        0xA6Ddc0D999A37565D9eC8ACABD2BD9783be837DD
+                        <button class="copy-btn" data-address="0xA6Ddc0D999A37565D9eC8ACABD2BD9783be837DD">Copy</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 1.5rem; padding: 1rem; background-color: #fff8e1; border-radius: 5px; border-left: 4px solid var(--warning);">
+                <p><strong>Important:</strong> Always double-check the wallet address before sending payment. Include your order ID in the payment memo if possible. Contact support@nautiluselectronics.com after payment.</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-content">
+            <div class="footer-section">
+                <h4>Nautilus Electronics</h4>
+                <p>Your trusted source for premium computer hardware since 2018. We specialize in cryptocurrency payments for tech enthusiasts.</p>
+                <div style="margin-top: 1rem; display: flex; gap: 15px;">
+                    <i class="fab fa-twitter" style="font-size: 1.2rem; color: #ccc;"></i>
+                    <i class="fab fa-discord" style="font-size: 1.2rem; color: #ccc;"></i>
+                    <i class="fab fa-telegram" style="font-size: 1.2rem; color: #ccc;"></i>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>Categories</h4>
+                <ul class="footer-links">
+                    <li><a href="#" data-category="Motherboards">Motherboards</a></li>
+                    <li><a href="#" data-category="CPU">Processors (CPU)</a></li>
+                    <li><a href="#" data-category="GPU">Graphics Cards (GPU)</a></li>
+                    <li><a href="#" data-category="RAM">Memory (RAM)</a></li>
+                    <li><a href="#" data-category="SSD">Storage (SSD/HDD)</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Support</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Order Tracking</a></li>
+                    <li><a href="#">Payment Help</a></li>
+                    <li><a href="#">Returns & Warranty</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">Crypto Payment FAQ</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="container copyright">
+            <p>&copy; 2023 Nautilus Electronics Store. All rights reserved. Prices and availability subject to change.</p>
+            <p style="margin-top: 0.5rem;">This website accepts cryptocurrency payments only. All sales are final.</p>
+        </div>
+    </footer>
+
+    <script>
+        // JSON数据源URL
+        const DATA_SOURCE_URL = 'https://Wkt010.github.io/nautilus/store/config0fce36.json';
+        
+        // 备用数据（如果远程加载失败时使用）
+        const FALLBACK_PRODUCTS = [
+            {
+                id: 1,
+                name: "ASUS ROG Maximus Z790",
+                category: "Motherboards",
+                description: "Intel Z790 chipset, LGA 1700 socket, DDR5 support, PCIe 5.0",
+                priceUSDT: 649.99,
+                priceBTC: 0.0185,
+                icon: "fas fa-microchip",
+                badge: "Best Seller"
+            },
+            {
+                id: 2,
+                name: "AMD Ryzen 9 7950X",
+                category: "CPU",
+                description: "16 cores, 32 threads, 5.7 GHz Max Boost, AM5 socket",
+                priceUSDT: 699.99,
+                priceBTC: 0.0199,
+                icon: "fas fa-tachometer-alt",
+                badge: "New"
+            },
+            {
+                id: 3,
+                name: "NVIDIA RTX 4090 Founders Edition",
+                category: "GPU",
+                description: "24GB GDDR6X, DLSS 3, Ada Lovelace Architecture",
+                priceUSDT: 1599.99,
+                priceBTC: 0.0455,
+                icon: "fas fa-gamepad",
+                badge: "Limited Stock"
+            }
+        ];
+
+        // Category icons mapping
+        const categoryIcons = {
+            "Motherboards": "fas fa-microchip",
+            "CPU": "fas fa-tachometer-alt",
+            "GPU": "fas fa-gamepad",
+            "RAM": "fas fa-memory",
+            "SSD": "fas fa-hdd",
+            "HDD": "fas fa-hdd",
+            "PSU": "fas fa-plug",
+            "Fans": "fas fa-fan"
+        };
+
+        // DOM elements
+        const productsContainer = document.getElementById('products-container');
+        const categoryButtons = document.querySelectorAll('.category-btn');
+        const loadingState = document.getElementById('loading-state');
+        const errorState = document.getElementById('error-state');
+        const dataSourceInfo = document.getElementById('data-source-info');
+        const retryBtn = document.getElementById('retry-btn');
+
+        // 全局产品数据
+        let products = [];
+        let dataLoaded = false;
+
+        // 初始化页面
+        async function initializePage() {
+            setupEventListeners();
+            await loadProductData();
+        }
+
+        // 从远程JSON文件加载产品数据
+        async function loadProductData() {
+            try {
+                showLoadingState();
+                
+                const response = await fetch(DATA_SOURCE_URL);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // 假设JSON数据是一个产品数组
+                // 如果JSON结构不同，您可能需要调整这里
+                if (Array.isArray(data)) {
+                    products = data;
+                } else if (data.products && Array.isArray(data.products)) {
+                    products = data.products;
+                } else {
+                    // 如果数据结构不符合预期，使用备用数据
+                    console.warn('JSON structure not as expected, using fallback data');
+                    products = FALLBACK_PRODUCTS;
+                }
+                
+                // 更新数据源信息
+                dataSourceInfo.innerHTML = `<i class="fas fa-check-circle" style="color: var(--success);"></i> 
+                    <span>Loaded ${products.length} products from external JSON file. Last updated: ${new Date().toLocaleTimeString()}</span>`;
+                
+                dataLoaded = true;
+                renderProducts(products);
+                hideLoadingState();
+                
+            } catch (error) {
+                console.error('Error loading product data:', error);
+                
+                // 使用备用数据
+                products = FALLBACK_PRODUCTS;
+                dataSourceInfo.innerHTML = `<i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i> 
+                    <span>Using fallback data. Could not load from external JSON: ${error.message}</span>`;
+                
+                dataLoaded = true;
+                renderProducts(products);
+                showErrorState();
+            }
+        }
+
+        // 显示加载状态
+        function showLoadingState() {
+            loadingState.style.display = 'flex';
+            productsContainer.style.display = 'none';
+            errorState.style.display = 'none';
+        }
+
+        // 隐藏加载状态
+        function hideLoadingState() {
+            loadingState.style.display = 'none';
+            productsContainer.style.display = 'grid';
+        }
+
+        // 显示错误状态
+        function showErrorState() {
+            errorState.style.display = 'flex';
+            loadingState.style.display = 'none';
+            productsContainer.style.display = 'grid';
+        }
+
+        // 隐藏错误状态
+        function hideErrorState() {
+            errorState.style.display = 'none';
+        }
+
+        // 渲染产品到页面
+        function renderProducts(productsArray) {
+            productsContainer.innerHTML = '';
+            
+            if (!productsArray || productsArray.length === 0) {
+                productsContainer.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--gray);">
+                        <i class="fas fa-box-open" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                        <h3>No Products Available</h3>
+                        <p>Check back soon for new hardware additions!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            productsArray.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                productCard.dataset.category = product.category;
+                
+                // 计算法币价格（简化转换）
+                const fiatPrice = (product.priceUSDT * 1.0).toFixed(2); // 假设 1 USDT = 1 USD
+                
+                // 使用产品数据中的图标，如果不存在则使用类别默认图标
+                const productIcon = product.icon || categoryIcons[product.category] || 'fas fa-microchip';
+                
+                productCard.innerHTML = `
+                    <div class="product-image">
+                        <i class="${productIcon}"></i>
+                        ${product.badge ? `<span class="product-badge">${product.badge}</span>` : ''}
+                    </div>
+                    <div class="product-content">
+                        <h3 class="product-title">${product.name}</h3>
+                        <p class="product-description">${product.description}</p>
+                        <div class="product-price">
+                            <div>
+                                <div class="price-crypto"><i class="fab fa-usdt crypto-icon"></i>${product.priceUSDT} USDT</div>
+                                <div class="price-crypto" style="font-size: 1rem; margin-top: 5px;"><i class="fab fa-btc crypto-icon"></i>${product.priceBTC} BTC</div>
+                            </div>
+                            <div class="price-fiat">≈ $${fiatPrice}</div>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn btn-buy" data-id="${product.id}">
+                                <i class="fas fa-shopping-cart"></i> Buy Now
+                            </button>
+                            <button class="btn btn-details" data-id="${product.id}">
+                                <i class="fas fa-info-circle"></i> Details
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                productsContainer.appendChild(productCard);
+            });
+        }
+
+        // 按类别筛选产品
+        function filterProducts(category) {
+            if (!dataLoaded) return;
+            
+            if (category === 'all') {
+                renderProducts(products);
+                return;
+            }
+            
+            const filteredProducts = products.filter(product => product.category === category);
+            renderProducts(filteredProducts);
+        }
+
+        // 更新活动类别按钮
+        function setActiveCategory(selectedCategory) {
+            categoryButtons.forEach(button => {
+                if (button.dataset.category === selectedCategory) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
+                }
+            });
+        }
+
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 类别筛选按钮
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const category = button.dataset.category;
+                    setActiveCategory(category);
+                    filterProducts(category);
+                    
+                    // 更新部分标题
+                    const sectionHeader = document.querySelector('.section-header h2');
+                    const sectionIcon = document.querySelector('.section-icon');
+                    
+                    if (category === 'all') {
+                        sectionHeader.innerHTML = `<i class="fas fa-box-open section-icon"></i> Featured Products`;
+                    } else {
+                        sectionHeader.innerHTML = `<i class="${categoryIcons[category] || 'fas fa-box'} section-icon"></i> ${category}`;
+                    }
+                });
+            });
+            
+            // 页脚类别链接
+            document.querySelectorAll('.footer-links a[data-category]').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const category = link.dataset.category;
+                    
+                    // 找到对应的按钮并点击它
+                    const correspondingButton = document.querySelector(`.category-btn[data-category="${category}"]`);
+                    if (correspondingButton) {
+                        correspondingButton.click();
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                });
+            });
+            
+            // 复制钱包地址按钮
+            const copyButtons = document.querySelectorAll('.copy-btn');
+            copyButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const address = button.dataset.address;
+                    navigator.clipboard.writeText(address).then(() => {
+                        const originalText = button.textContent;
+                        button.textContent = 'Copied!';
+                        button.style.background = 'var(--success)';
+                        
+                        setTimeout(() => {
+                            button.textContent = originalText;
+                            button.style.background = 'var(--accent)';
+                        }, 2000);
+                    }).catch(err => {
+                        console.error('Failed to copy: ', err);
+                    });
+                });
+            });
+            
+            // 重试按钮
+            if (retryBtn) {
+                retryBtn.addEventListener('click', async () => {
+                    hideErrorState();
+                    showLoadingState();
+                    await loadProductData();
+                });
+            }
+            
+            // 购买和详情按钮（使用事件委托）
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('.btn-buy')) {
+                    const productId = e.target.closest('.btn-buy').dataset.id;
+                    const product = products.find(p => p.id == productId);
+                    if (product) {
+                        alert(`Added ${product.name} to cart!\n\nPrice: ${product.priceUSDT} USDT or ${product.priceBTC} BTC\n\nProceed to checkout with your preferred cryptocurrency.`);
+                    }
+                }
+                
+                if (e.target.closest('.btn-details')) {
+                    const productId = e.target.closest('.btn-details').dataset.id;
+                    const product = products.find(p => p.id == productId);
+                    if (product) {
+                        alert(`Product Details:\n\n${product.name}\nCategory: ${product.category}\nDescription: ${product.description}\n\nPrice: ${product.priceUSDT} USDT or ${product.priceBTC} BTC`);
+                    }
+                }
+            });
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', initializePage);
+    </script>
+</body>
+</html>
