@@ -193,12 +193,18 @@
             align-items: center;
             justify-content: center;
             position: relative;
+            overflow: hidden;
         }
 
-        .product-image i {
-            font-size: 4rem;
-            color: var(--secondary);
-            opacity: 0.8;
+        .product-image img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.05);
         }
 
         .product-badge {
@@ -211,6 +217,7 @@
             border-radius: 5px;
             font-size: 0.8rem;
             font-weight: 600;
+            z-index: 2;
         }
 
         .product-content {
@@ -424,6 +431,13 @@
             gap: 10px;
         }
 
+        /* Fallback for missing images */
+        .image-fallback {
+            font-size: 4rem;
+            color: var(--secondary);
+            opacity: 0.8;
+        }
+
         /* Footer */
         footer {
             background: var(--primary);
@@ -492,6 +506,10 @@
             
             .products-grid {
                 grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            .product-image {
+                height: 160px;
             }
         }
     </style>
@@ -703,7 +721,7 @@
                 description: "Intel Z790 chipset, LGA 1700 socket, DDR5 support, PCIe 5.0",
                 priceUSDT: 649.99,
                 priceBTC: 0.0185,
-                icon: "fas fa-microchip",
+                image: "./fthimgs/motherboard.jpg",
                 badge: "Best Seller"
             },
             {
@@ -713,7 +731,7 @@
                 description: "16 cores, 32 threads, 5.7 GHz Max Boost, AM5 socket",
                 priceUSDT: 699.99,
                 priceBTC: 0.0199,
-                icon: "fas fa-tachometer-alt",
+                image: "./fthimgs/cpu.jpg",
                 badge: "New"
             },
             {
@@ -723,12 +741,12 @@
                 description: "24GB GDDR6X, DLSS 3, Ada Lovelace Architecture",
                 priceUSDT: 1599.99,
                 priceBTC: 0.0455,
-                icon: "fas fa-gamepad",
+                image: "./fthimgs/gpu.jpg",
                 badge: "Limited Stock"
             }
         ];
 
-        // Category icons mapping
+        // Category icons mapping (for fallback)
         const categoryIcons = {
             "Motherboards": "fas fa-microchip",
             "CPU": "fas fa-tachometer-alt",
@@ -763,7 +781,11 @@
             try {
                 showLoadingState();
                 
-                const response = await fetch(DATA_SOURCE_URL);
+                // 添加时间戳避免缓存
+                const timestamp = new Date().getTime();
+                const url = `${DATA_SOURCE_URL}?t=${timestamp}`;
+                
+                const response = await fetch(url);
                 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -853,12 +875,16 @@
                 // 计算法币价格（简化转换）
                 const fiatPrice = (product.priceUSDT * 1.0).toFixed(2); // 假设 1 USDT = 1 USD
                 
-                // 使用产品数据中的图标，如果不存在则使用类别默认图标
-                const productIcon = product.icon || categoryIcons[product.category] || 'fas fa-microchip';
+                // 使用产品数据中的图片，如果不存在则使用类别默认图标
+                const productImage = product.image || '';
+                const productIcon = categoryIcons[product.category] || 'fas fa-microchip';
                 
                 productCard.innerHTML = `
                     <div class="product-image">
-                        <i class="${productIcon}"></i>
+                        ${productImage ? 
+                            `<img src="${productImage}" alt="${product.name}" onerror="handleImageError(this, '${productIcon}')">` : 
+                            `<i class="${productIcon} image-fallback"></i>`
+                        }
                         ${product.badge ? `<span class="product-badge">${product.badge}</span>` : ''}
                     </div>
                     <div class="product-content">
@@ -884,6 +910,19 @@
                 
                 productsContainer.appendChild(productCard);
             });
+        }
+
+        // 处理图片加载错误
+        function handleImageError(imgElement, fallbackIconClass) {
+            // 隐藏图片
+            imgElement.style.display = 'none';
+            
+            // 创建图标元素
+            const iconElement = document.createElement('i');
+            iconElement.className = `${fallbackIconClass} image-fallback`;
+            
+            // 将图标插入到图片位置
+            imgElement.parentNode.appendChild(iconElement);
         }
 
         // 按类别筛选产品
