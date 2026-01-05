@@ -51,7 +51,7 @@
       "id": 5003,
       "name": "Samsung PM9B1 NVMe SSD 256GB System Disc [1 left]",
       "category": "SSD",
-      "description": "PCIe 4.0, 5840 MB/s read, 5530 MB/s write",
+      "description": "PCIe 4.0. See more at: https://www.techpowerup.com/ssd-specs/samsung-pm9b1-256-gb.d2081",
       "priceUSDT": 179.99,
       "priceBTC": 0.0051,
       "icon": "fas fa-hdd",
