@@ -755,10 +755,25 @@
         // JSON数据源URL
         const DATA_SOURCE_URL = 'https://Wkt010.github.io/nautilus/store/config0fce36.json';
         
-        // 汇率API (使用币安API获取实时BTC/USDT汇率)
-        const EXCHANGE_RATE_API = 'https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT';
+        // 汇率API - 国内可访问的多个选项
+        const EXCHANGE_RATE_APIS = [
+            // 选项1: 欧易(OKX) API - 国内可用
+            'https://www.okx.com/api/v5/market/ticker?instId=BTC-USDT',
+            
+            // 选项2: 火币(Huobi) API - 国内可用
+            'https://api.huobi.pro/market/detail/merged?symbol=btcusdt',
+            
+            // 选项3: 币安国内镜像 (如有)
+            // 'https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT',
+            
+            // 选项4: 聚合数据API (示例)
+            // 'https://web-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=BTC'
+        ];
         
-        // 备用汇率（如果API请求失败时使用）
+        // 当前使用的API索引
+        let currentApiIndex = 0;
+        
+        // 备用汇率（如果所有API请求都失败时使用）
         const FALLBACK_EXCHANGE_RATE = 65000; // 1 BTC = 65000 USDT
         
         // 备用产品数据
@@ -821,6 +836,8 @@
         let dataLoaded = false;
         let currentExchangeRate = FALLBACK_EXCHANGE_RATE; // 当前汇率
         let exchangeRateLastUpdated = null;
+        let apiRetryCount = 0;
+        const MAX_API_RETRIES = 3;
 
         // 初始化页面
         async function initializePage() {
@@ -831,10 +848,42 @@
 
         // 获取实时汇率
         async function loadExchangeRate() {
+            // 重置重试计数
+            apiRetryCount = 0;
+            
+            // 尝试所有API直到成功
+            for (currentApiIndex = 0; currentApiIndex < EXCHANGE_RATE_APIS.length; currentApiIndex++) {
+                try {
+                    await fetchExchangeRateFromApi(EXCHANGE_RATE_APIS[currentApiIndex]);
+                    return; // 如果成功则返回
+                } catch (error) {
+                    console.warn(`API ${currentApiIndex} failed:`, error);
+                    // 继续尝试下一个API
+                }
+            }
+            
+            // 所有API都失败，使用备用汇率
+            useFallbackExchangeRate();
+        }
+
+        // 从特定API获取汇率
+        async function fetchExchangeRateFromApi(apiUrl) {
             try {
                 // 添加时间戳避免缓存
                 const timestamp = new Date().getTime();
-                const url = `${EXCHANGE_RATE_API}&t=${timestamp}`;
+                let url = apiUrl;
+                
+                // 为不同API添加不同参数
+                if (apiUrl.includes('okx.com')) {
+                    // OKX API
+                    url = `${apiUrl}&t=${timestamp}`;
+                } else if (apiUrl.includes('huobi.pro')) {
+                    // 火币API
+                    url = `${apiUrl}&_=${timestamp}`;
+                } else {
+                    // 其他API
+                    url = `${apiUrl}${apiUrl.includes('?') ? '&' : '?'}t=${timestamp}`;
+                }
                 
                 const response = await fetch(url);
                 
@@ -843,31 +892,69 @@
                 }
                 
                 const data = await response.json();
-                currentExchangeRate = parseFloat(data.price);
-                exchangeRateLastUpdated = new Date();
                 
-                // 更新汇率显示
-                updateExchangeRateDisplay();
+                // 根据API响应结构解析汇率
+                let rate = null;
+                
+                if (apiUrl.includes('okx.com')) {
+                    // OKX API 响应格式
+                    if (data.data && data.data[0] && data.data[0].last) {
+                        rate = parseFloat(data.data[0].last);
+                    }
+                } else if (apiUrl.includes('huobi.pro')) {
+                    // 火币API 响应格式
+                    if (data.tick && data.tick.close) {
+                        rate = parseFloat(data.tick.close);
+                    }
+                } else if (apiUrl.includes('binance.com')) {
+                    // 币安API 响应格式
+                    if (data.price) {
+                        rate = parseFloat(data.price);
+                    }
+                } else if (apiUrl.includes('coinmarketcap.com')) {
+                    // CoinMarketCap API 响应格式 (示例)
+                    if (data.data && data.data.BTC && data.data.BTC.quote && data.data.BTC.quote.USD && data.data.BTC.quote.USD.price) {
+                        rate = parseFloat(data.data.BTC.quote.USD.price);
+                    }
+                }
+                
+                if (rate && !isNaN(rate) && rate > 0) {
+                    currentExchangeRate = rate;
+                    exchangeRateLastUpdated = new Date();
+                    
+                    // 更新汇率显示
+                    updateExchangeRateDisplay();
+                    return;
+                } else {
+                    throw new Error('Invalid rate data received');
+                }
                 
             } catch (error) {
-                console.error('Error loading exchange rate:', error);
-                
-                // 使用备用汇率
-                currentExchangeRate = FALLBACK_EXCHANGE_RATE;
-                exchangeRateLastUpdated = new Date();
-                
-                // 更新汇率显示（显示错误）
-                rateText.innerHTML = `<i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i> Using fallback rate: 1 BTC = ${formatNumber(currentExchangeRate)} USDT`;
-                rateTime.textContent = `Last updated: ${exchangeRateLastUpdated.toLocaleTimeString()}`;
-                
-                // 更新所有产品的BTC价格
-                updateAllBTCPrices();
+                console.error(`Error fetching from ${apiUrl}:`, error);
+                throw error; // 重新抛出错误以便上层处理
             }
+        }
+
+        // 使用备用汇率
+        function useFallbackExchangeRate() {
+            console.log('All APIs failed, using fallback exchange rate');
+            currentExchangeRate = FALLBACK_EXCHANGE_RATE;
+            exchangeRateLastUpdated = new Date();
+            
+            // 更新汇率显示（显示错误）
+            rateText.innerHTML = `<i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i> Using fallback rate: 1 BTC = ${formatNumber(currentExchangeRate)} USDT`;
+            rateTime.textContent = `Last updated: ${exchangeRateLastUpdated.toLocaleTimeString()}`;
+            
+            // 更新所有产品的BTC价格
+            updateAllBTCPrices();
         }
 
         // 更新汇率显示
         function updateExchangeRateDisplay() {
-            rateText.innerHTML = `<i class="fas fa-check-circle" style="color: var(--success);"></i> Live rate: 1 BTC = ${formatNumber(currentExchangeRate)} USDT`;
+            const apiNames = ['OKX', 'Huobi', 'Binance', 'CoinMarketCap'];
+            const apiName = apiNames[currentApiIndex] || 'Exchange';
+            
+            rateText.innerHTML = `<i class="fas fa-check-circle" style="color: var(--success);"></i> Live rate (${apiName}): 1 BTC = ${formatNumber(currentExchangeRate)} USDT`;
             rateTime.textContent = `Last updated: ${exchangeRateLastUpdated.toLocaleTimeString()}`;
             
             // 更新所有产品的BTC价格
@@ -942,264 +1029,4 @@
                     products = data.products;
                 } else {
                     // 如果数据结构不符合预期，使用备用数据
-                    console.warn('JSON structure not as expected, using fallback data');
-                    products = FALLBACK_PRODUCTS;
-                }
-                
-                // 更新数据源信息
-                dataSourceInfo.innerHTML = `<i class="fas fa-check-circle" style="color: var(--success);"></i> 
-                    <span>Loaded ${products.length} products from external JSON file. Last updated: ${new Date().toLocaleTimeString()}</span>`;
-                
-                dataLoaded = true;
-                renderProducts(products);
-                hideLoadingState();
-                
-            } catch (error) {
-                console.error('Error loading product data:', error);
-                
-                // 使用备用数据
-                products = FALLBACK_PRODUCTS;
-                dataSourceInfo.innerHTML = `<i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i> 
-                    <span>Using fallback data. Could not load from external JSON: ${error.message}</span>`;
-                
-                dataLoaded = true;
-                renderProducts(products);
-                showErrorState();
-            }
-        }
-
-        // 显示加载状态
-        function showLoadingState() {
-            loadingState.style.display = 'flex';
-            productsContainer.style.display = 'none';
-            errorState.style.display = 'none';
-        }
-
-        // 隐藏加载状态
-        function hideLoadingState() {
-            loadingState.style.display = 'none';
-            productsContainer.style.display = 'grid';
-        }
-
-        // 显示错误状态
-        function showErrorState() {
-            errorState.style.display = 'flex';
-            loadingState.style.display = 'none';
-            productsContainer.style.display = 'grid';
-        }
-
-        // 隐藏错误状态
-        function hideErrorState() {
-            errorState.style.display = 'none';
-        }
-
-        // 渲染产品到页面
-        function renderProducts(productsArray) {
-            productsContainer.innerHTML = '';
-            
-            if (!productsArray || productsArray.length === 0) {
-                productsContainer.innerHTML = `
-                    <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--gray);">
-                        <i class="fas fa-box-open" style="font-size: 3rem; margin-bottom: 1rem;"></i>
-                        <h3>No Products Available</h3>
-                        <p>Check back soon for new hardware additions!</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            productsArray.forEach(product => {
-                const productCard = document.createElement('div');
-                productCard.className = 'product-card';
-                productCard.dataset.category = product.category;
-                
-                // 计算法币价格（简化转换）
-                const fiatPrice = (product.priceUSDT * 1.0).toFixed(2); // 假设 1 USDT = 1 USD
-                
-                // 计算BTC价格
-                const btcPrice = formatBTCPrice(product.priceUSDT);
-                
-                // 使用产品数据中的图片，如果不存在则使用类别默认图标
-                const productImage = product.image || '';
-                const productIcon = categoryIcons[product.category] || 'fas fa-microchip';
-                
-                productCard.innerHTML = `
-                    <div class="product-image">
-                        ${productImage ? 
-                            `<img src="${productImage}" alt="${product.name}" onerror="handleImageError(this, '${productIcon}')">` : 
-                            `<i class="${productIcon} image-fallback"></i>`
-                        }
-                        ${product.badge ? `<span class="product-badge">${product.badge}</span>` : ''}
-                    </div>
-                    <div class="product-content">
-                        <h3 class="product-title">${product.name}</h3>
-                        <p class="product-description">${product.description}</p>
-                        <div class="product-price">
-                            <div>
-                                <div class="price-crypto"><i class="fab fa-usdt crypto-icon"></i>${product.priceUSDT} USDT</div>
-                                <div class="price-crypto" style="font-size: 1rem; margin-top: 5px;"><i class="fab fa-btc crypto-icon"></i>${btcPrice} BTC</div>
-                            </div>
-                            <div class="price-fiat">≈ $${fiatPrice}</div>
-                        </div>
-                        <div class="product-actions">
-                            <button class="btn btn-buy" data-id="${product.id}">
-                                <i class="fas fa-shopping-cart"></i> Buy Now
-                            </button>
-                            <button class="btn btn-details" data-id="${product.id}">
-                                <i class="fas fa-info-circle"></i> Details
-                            </button>
-                        </div>
-                    </div>
-                `;
-                
-                productsContainer.appendChild(productCard);
-            });
-        }
-
-        // 处理图片加载错误
-        function handleImageError(imgElement, fallbackIconClass) {
-            // 隐藏图片
-            imgElement.style.display = 'none';
-            
-            // 创建图标元素
-            const iconElement = document.createElement('i');
-            iconElement.className = `${fallbackIconClass} image-fallback`;
-            
-            // 将图标插入到图片位置
-            imgElement.parentNode.appendChild(iconElement);
-        }
-
-        // 按类别筛选产品
-        function filterProducts(category) {
-            if (!dataLoaded) return;
-            
-            if (category === 'all') {
-                renderProducts(products);
-                return;
-            }
-            
-            const filteredProducts = products.filter(product => product.category === category);
-            renderProducts(filteredProducts);
-        }
-
-        // 更新活动类别按钮
-        function setActiveCategory(selectedCategory) {
-            categoryButtons.forEach(button => {
-                if (button.dataset.category === selectedCategory) {
-                    button.classList.add('active');
-                } else {
-                    button.classList.remove('active');
-                }
-            });
-        }
-
-        // 设置事件监听器
-        function setupEventListeners() {
-            // 类别筛选按钮
-            categoryButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const category = button.dataset.category;
-                    setActiveCategory(category);
-                    filterProducts(category);
-                    
-                    // 更新部分标题
-                    const sectionHeader = document.querySelector('.section-header h2');
-                    const sectionIcon = document.querySelector('.section-icon');
-                    
-                    if (category === 'all') {
-                        sectionHeader.innerHTML = `<i class="fas fa-box-open section-icon"></i> Featured Products`;
-                    } else {
-                        sectionHeader.innerHTML = `<i class="${categoryIcons[category] || 'fas fa-box'} section-icon"></i> ${category}`;
-                    }
-                });
-            });
-            
-            // 页脚类别链接
-            document.querySelectorAll('.footer-links a[data-category]').forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const category = link.dataset.category;
-                    
-                    // 找到对应的按钮并点击它
-                    const correspondingButton = document.querySelector(`.category-btn[data-category="${category}"]`);
-                    if (correspondingButton) {
-                        correspondingButton.click();
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }
-                });
-            });
-            
-            // 复制钱包地址按钮
-            const copyButtons = document.querySelectorAll('.copy-btn');
-            copyButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const address = button.dataset.address;
-                    navigator.clipboard.writeText(address).then(() => {
-                        const originalText = button.textContent;
-                        button.textContent = 'Copied!';
-                        button.style.background = 'var(--success)';
-                        
-                        setTimeout(() => {
-                            button.textContent = originalText;
-                            button.style.background = 'var(--accent)';
-                        }, 2000);
-                    }).catch(err => {
-                        console.error('Failed to copy: ', err);
-                    });
-                });
-            });
-            
-            // 重试按钮
-            if (retryBtn) {
-                retryBtn.addEventListener('click', async () => {
-                    hideErrorState();
-                    showLoadingState();
-                    await loadProductData();
-                });
-            }
-            
-            // 刷新汇率按钮
-            if (refreshRateBtn) {
-                refreshRateBtn.addEventListener('click', async () => {
-                    refreshRateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
-                    refreshRateBtn.disabled = true;
-                    
-                    await loadExchangeRate();
-                    
-                    refreshRateBtn.innerHTML = '<i class="fas fa-redo"></i> Refresh Rate';
-                    refreshRateBtn.disabled = false;
-                });
-            }
-            
-            // 购买和详情按钮（使用事件委托）
-            document.addEventListener('click', (e) => {
-                if (e.target.closest('.btn-buy')) {
-                    const productId = e.target.closest('.btn-buy').dataset.id;
-                    const product = products.find(p => p.id == productId);
-                    if (product) {
-                        const btcPrice = formatBTCPrice(product.priceUSDT);
-                        alert(`Added ${product.name} to cart!\n\nPrice: ${product.priceUSDT} USDT or ${btcPrice} BTC\n\nProceed to checkout with your preferred cryptocurrency.`);
-                    }
-                }
-                
-                if (e.target.closest('.btn-details')) {
-                    const productId = e.target.closest('.btn-details').dataset.id;
-                    const product = products.find(p => p.id == productId);
-                    if (product) {
-                        const btcPrice = formatBTCPrice(product.priceUSDT);
-                        alert(`Product Details:\n\n${product.name}\nCategory: ${product.category}\nDescription: ${product.description}\n\nPrice: ${product.priceUSDT} USDT or ${btcPrice} BTC`);
-                    }
-                }
-            });
-            
-            // 自动刷新汇率（每5分钟）
-            setInterval(async () => {
-                await loadExchangeRate();
-            }, 5 * 60 * 1000);
-        }
-
-        // 页面加载完成后初始化
-        document.addEventListener('DOMContentLoaded', initializePage);
-    </script>
-</body>
-</html>
+                   
