@@ -1,6 +1,6 @@
 {
   "storeName": "Nautilus Electronics Store",
-  "lastUpdated": "2023-12-15",
+  "lastUpdated": "2026-1-5",
   "currency": "USDT/BTC",
   "products": [
     {
@@ -44,6 +44,7 @@
       "priceUSDT": 92.99,
       "priceBTC": 0.00099,
       "icon": "fas fa-memory",
+      "image": "./fthimgs/4007.webp",
       "badge": "RGB"
     },
     {
