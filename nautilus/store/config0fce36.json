@@ -4,50 +4,51 @@
   "currency": "USDT/BTC",
   "products": [
     {
-      "id": 1,
+      "id": 1013,
       "name": "ASUS ROG Maximus Z790",
       "category": "Motherboards",
-      "description": "Intel Z790 chipset, LGA 1700 socket, DDR5 support, PCIe 5.0",
-      "priceUSDT": 649.99,
-      "priceBTC": 0.0185,
+      "description": "Intel Z790 chipset, LGA 1700 socket, DDR5 support, PCIe 5.0, ROG Specialized software support",
+      "priceUSDT": 659.99,
+      "priceBTC": 0.007095,
       "icon": "fas fa-microchip",
+      "image": "https://dlcdnwebimgs.asus.com.cn/files/media/29C004F7-7B1F-4EBF-9099-7168B520A0EE/v1/img/kv/pd.png",
       "badge": "Best Seller"
     },
     {
-      "id": 2,
+      "id": 2005,
       "name": "AMD Ryzen 9 7950X",
       "category": "CPU",
       "description": "16 cores, 32 threads, 5.7 GHz Max Boost, AM5 socket",
       "priceUSDT": 699.99,
-      "priceBTC": 0.0199,
+      "priceBTC": 0.007525,
       "icon": "fas fa-tachometer-alt",
-      "image": "./fthimgs/r9-7950x.jpg",
+      "image": "https://www.amd.com/content/dam/amd/en/images/products/processors/ryzen/2505503-ryzen-9-7900x.jpg",
       "badge": "New"
     },
     {
-      "id": 3,
+      "id": 3031,
       "name": "NVIDIA RTX 4090 Founders Edition",
       "category": "GPU",
       "description": "24GB GDDR6X, DLSS 3, Ada Lovelace Architecture",
-      "priceUSDT": 1599.99,
-      "priceBTC": 0.0455,
+      "priceUSDT": 1619.99,
+      "priceBTC": 0.01741499,
       "icon": "fas fa-gamepad",
       "image": "https://images.nvidia.cn/aem-dam/Solutions/geforce/ada/rtx-4090/geforce-rtx-4090-product-gallery-full-screen-3840-3.jpg",
       "badge": "Limited Stock"
     },
     {
-      "id": 4,
-      "name": "Corsair Dominator Platinum RGB 64GB",
+      "id": 4007,
+      "name": "Kingston FURY Beast 16GB DDR4",
       "category": "RAM",
-      "description": "DDR5 6400MHz, CL32, Intel XMP 3.0 certified",
-      "priceUSDT": 349.99,
-      "priceBTC": 0.0099,
+      "description": "3200MHz(id:4007)/3600Mhz(id:4010) DDR4, supports PnP automatic overclock",
+      "priceUSDT": 92.99,
+      "priceBTC": 0.00099,
       "icon": "fas fa-memory",
       "badge": "RGB"
     },
     {
-      "id": 5,
-      "name": "Samsung 990 Pro 2TB NVMe SSD",
+      "id": 5003,
+      "name": "Samsung 990 Pro 2TB NVMe SSD [Out of stock]",
       "category": "SSD",
       "description": "PCIe 4.0, 7450 MB/s read, 6900 MB/s write",
       "priceUSDT": 179.99,
@@ -56,8 +57,8 @@
       "badge": "Fastest"
     },
     {
-      "id": 6,
-      "name": "Seagate IronWolf Pro 16TB",
+      "id": 6002,
+      "name": "Seagate IronWolf Pro 16TB [Out of stock]",
       "category": "HDD",
       "description": "NAS hard drive, 7200 RPM, 256MB cache, CMR technology",
       "priceUSDT": 299.99,
@@ -66,8 +67,8 @@
       "badge": "NAS Ready"
     },
     {
-      "id": 7,
-      "name": "Corsair RM1000x SHIFT",
+      "id": 7144,
+      "name": "Corsair RM1000x SHIFT [Out of stock]",
       "category": "PSU",
       "description": "1000W, 80 Plus Gold, fully modular, ATX 3.0 compatible",
       "priceUSDT": 229.99,
@@ -76,8 +77,8 @@
       "badge": "ATX 3.0"
     },
     {
-      "id": 8,
-      "name": "Noctua NF-A14 PWM Chromax",
+      "id": 8013,
+      "name": "Noctua NF-A14 PWM Chromax [Out of stock]",
       "category": "Fans",
       "description": "140mm premium fan, PWM support, ultra-quiet operation",
       "priceUSDT": 29.99,
