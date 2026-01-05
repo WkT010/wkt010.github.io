@@ -431,6 +431,31 @@
             gap: 10px;
         }
 
+        .exchange-rate-info {
+            background: #d4edda;
+            color: #155724;
+            padding: 0.75rem 1rem;
+            border-radius: 5px;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .rate-refresh {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
         /* Fallback for missing images */
         .image-fallback {
             font-size: 4rem;
@@ -511,6 +536,12 @@
             .product-image {
                 height: 160px;
             }
+            
+            .exchange-rate-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
         }
     </style>
 </head>
@@ -580,8 +611,20 @@
             <div class="section-header">
                 <h2><i class="fas fa-box-open section-icon"></i> Featured Products</h2>
                 <div class="crypto-prices">
-                    <small>Prices in USDT & BTC | Live Crypto Rates Applied</small>
+                    <small>Prices in USDT with real-time BTC conversion</small>
                 </div>
+            </div>
+            
+            <!-- 汇率信息 -->
+            <div class="exchange-rate-info" id="exchange-rate-info">
+                <div>
+                    <i class="fas fa-exchange-alt"></i>
+                    <span id="rate-text">Fetching exchange rate...</span>
+                    <span id="rate-time" style="font-size: 0.8rem; margin-left: 10px; color: #0c5460;"></span>
+                </div>
+                <button class="rate-refresh" id="refresh-rate-btn">
+                    <i class="fas fa-redo"></i> Refresh Rate
+                </button>
             </div>
             
             <!-- Data source info -->
@@ -664,7 +707,7 @@
             </div>
             
             <div style="margin-top: 1.5rem; padding: 1rem; background-color: #fff8e1; border-radius: 5px; border-left: 4px solid var(--warning);">
-                <p><strong>Important:</strong> Always double-check the wallet address before sending payment. Include your order ID in the payment memo if possible. Contact airsoftstudio@outlook.com after payment. Do not forget to enter your Product Name, how much you've paid, and the proof of payment on the blockchain. :)</p>
+                <p><strong>Important:</strong> Always double-check the wallet address before sending payment. Include your order ID in the payment memo if possible. Contact support@nautiluselectronics.com after payment.</p>
             </div>
         </section>
     </main>
@@ -712,7 +755,13 @@
         // JSON数据源URL
         const DATA_SOURCE_URL = 'https://Wkt010.github.io/nautilus/store/config0fce36.json';
         
-        // 备用数据（如果远程加载失败时使用）
+        // 汇率API (使用币安API获取实时BTC/USDT汇率)
+        const EXCHANGE_RATE_API = 'https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT';
+        
+        // 备用汇率（如果API请求失败时使用）
+        const FALLBACK_EXCHANGE_RATE = 65000; // 1 BTC = 65000 USDT
+        
+        // 备用产品数据
         const FALLBACK_PRODUCTS = [
             {
                 id: 1,
@@ -720,7 +769,6 @@
                 category: "Motherboards",
                 description: "Intel Z790 chipset, LGA 1700 socket, DDR5 support, PCIe 5.0",
                 priceUSDT: 649.99,
-                priceBTC: 0.0185,
                 image: "./fthimgs/motherboard.jpg",
                 badge: "Best Seller"
             },
@@ -730,7 +778,6 @@
                 category: "CPU",
                 description: "16 cores, 32 threads, 5.7 GHz Max Boost, AM5 socket",
                 priceUSDT: 699.99,
-                priceBTC: 0.0199,
                 image: "./fthimgs/cpu.jpg",
                 badge: "New"
             },
@@ -740,13 +787,12 @@
                 category: "GPU",
                 description: "24GB GDDR6X, DLSS 3, Ada Lovelace Architecture",
                 priceUSDT: 1599.99,
-                priceBTC: 0.0455,
                 image: "./fthimgs/gpu.jpg",
                 badge: "Limited Stock"
             }
         ];
 
-        // Category icons mapping (for fallback)
+        // Category icons mapping (for fallback when images fail)
         const categoryIcons = {
             "Motherboards": "fas fa-microchip",
             "CPU": "fas fa-tachometer-alt",
@@ -765,15 +811,110 @@
         const errorState = document.getElementById('error-state');
         const dataSourceInfo = document.getElementById('data-source-info');
         const retryBtn = document.getElementById('retry-btn');
+        const exchangeRateInfo = document.getElementById('exchange-rate-info');
+        const rateText = document.getElementById('rate-text');
+        const rateTime = document.getElementById('rate-time');
+        const refreshRateBtn = document.getElementById('refresh-rate-btn');
 
-        // 全局产品数据
+        // 全局变量
         let products = [];
         let dataLoaded = false;
+        let currentExchangeRate = FALLBACK_EXCHANGE_RATE; // 当前汇率
+        let exchangeRateLastUpdated = null;
 
         // 初始化页面
         async function initializePage() {
             setupEventListeners();
-            await loadProductData();
+            await loadExchangeRate(); // 先获取汇率
+            await loadProductData(); // 再加载产品数据
+        }
+
+        // 获取实时汇率
+        async function loadExchangeRate() {
+            try {
+                // 添加时间戳避免缓存
+                const timestamp = new Date().getTime();
+                const url = `${EXCHANGE_RATE_API}&t=${timestamp}`;
+                
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                currentExchangeRate = parseFloat(data.price);
+                exchangeRateLastUpdated = new Date();
+                
+                // 更新汇率显示
+                updateExchangeRateDisplay();
+                
+            } catch (error) {
+                console.error('Error loading exchange rate:', error);
+                
+                // 使用备用汇率
+                currentExchangeRate = FALLBACK_EXCHANGE_RATE;
+                exchangeRateLastUpdated = new Date();
+                
+                // 更新汇率显示（显示错误）
+                rateText.innerHTML = `<i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i> Using fallback rate: 1 BTC = ${formatNumber(currentExchangeRate)} USDT`;
+                rateTime.textContent = `Last updated: ${exchangeRateLastUpdated.toLocaleTimeString()}`;
+                
+                // 更新所有产品的BTC价格
+                updateAllBTCPrices();
+            }
+        }
+
+        // 更新汇率显示
+        function updateExchangeRateDisplay() {
+            rateText.innerHTML = `<i class="fas fa-check-circle" style="color: var(--success);"></i> Live rate: 1 BTC = ${formatNumber(currentExchangeRate)} USDT`;
+            rateTime.textContent = `Last updated: ${exchangeRateLastUpdated.toLocaleTimeString()}`;
+            
+            // 更新所有产品的BTC价格
+            updateAllBTCPrices();
+        }
+
+        // 格式化数字（添加千位分隔符）
+        function formatNumber(num) {
+            return num.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        // 格式化BTC价格（保留足够的小数位）
+        function formatBTCPrice(usdtPrice) {
+            const btcPrice = usdtPrice / currentExchangeRate;
+            
+            // 根据BTC价格的大小决定显示的小数位数
+            if (btcPrice < 0.0001) {
+                return btcPrice.toFixed(8);
+            } else if (btcPrice < 0.01) {
+                return btcPrice.toFixed(6);
+            } else if (btcPrice < 1) {
+                return btcPrice.toFixed(4);
+            } else {
+                return btcPrice.toFixed(2);
+            }
+        }
+
+        // 更新所有产品的BTC价格显示
+        function updateAllBTCPrices() {
+            if (!dataLoaded) return;
+            
+            // 更新每个产品的BTC价格显示
+            document.querySelectorAll('.product-card').forEach(card => {
+                const productId = parseInt(card.querySelector('.btn-buy').dataset.id);
+                const product = products.find(p => p.id === productId);
+                
+                if (product) {
+                    const btcPriceElement = card.querySelector('.price-crypto:nth-child(2)');
+                    if (btcPriceElement) {
+                        const btcPrice = formatBTCPrice(product.priceUSDT);
+                        btcPriceElement.innerHTML = `<i class="fab fa-btc crypto-icon"></i>${btcPrice} BTC`;
+                    }
+                }
+            });
         }
 
         // 从远程JSON文件加载产品数据
@@ -875,6 +1016,9 @@
                 // 计算法币价格（简化转换）
                 const fiatPrice = (product.priceUSDT * 1.0).toFixed(2); // 假设 1 USDT = 1 USD
                 
+                // 计算BTC价格
+                const btcPrice = formatBTCPrice(product.priceUSDT);
+                
                 // 使用产品数据中的图片，如果不存在则使用类别默认图标
                 const productImage = product.image || '';
                 const productIcon = categoryIcons[product.category] || 'fas fa-microchip';
@@ -893,7 +1037,7 @@
                         <div class="product-price">
                             <div>
                                 <div class="price-crypto"><i class="fab fa-usdt crypto-icon"></i>${product.priceUSDT} USDT</div>
-                                <div class="price-crypto" style="font-size: 1rem; margin-top: 5px;"><i class="fab fa-btc crypto-icon"></i>${product.priceBTC} BTC</div>
+                                <div class="price-crypto" style="font-size: 1rem; margin-top: 5px;"><i class="fab fa-btc crypto-icon"></i>${btcPrice} BTC</div>
                             </div>
                             <div class="price-fiat">≈ $${fiatPrice}</div>
                         </div>
@@ -1014,13 +1158,27 @@
                 });
             }
             
+            // 刷新汇率按钮
+            if (refreshRateBtn) {
+                refreshRateBtn.addEventListener('click', async () => {
+                    refreshRateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+                    refreshRateBtn.disabled = true;
+                    
+                    await loadExchangeRate();
+                    
+                    refreshRateBtn.innerHTML = '<i class="fas fa-redo"></i> Refresh Rate';
+                    refreshRateBtn.disabled = false;
+                });
+            }
+            
             // 购买和详情按钮（使用事件委托）
             document.addEventListener('click', (e) => {
                 if (e.target.closest('.btn-buy')) {
                     const productId = e.target.closest('.btn-buy').dataset.id;
                     const product = products.find(p => p.id == productId);
                     if (product) {
-                        alert(`Added ${product.name} to cart!\n\nPrice: ${product.priceUSDT} USDT or ${product.priceBTC} BTC\n\nProceed to checkout with your preferred cryptocurrency.`);
+                        const btcPrice = formatBTCPrice(product.priceUSDT);
+                        alert(`Added ${product.name} to cart!\n\nPrice: ${product.priceUSDT} USDT or ${btcPrice} BTC\n\nProceed to checkout with your preferred cryptocurrency.`);
                     }
                 }
                 
@@ -1028,10 +1186,16 @@
                     const productId = e.target.closest('.btn-details').dataset.id;
                     const product = products.find(p => p.id == productId);
                     if (product) {
-                        alert(`Product Details:\n\n${product.name}\nCategory: ${product.category}\nDescription: ${product.description}\n\nPrice: ${product.priceUSDT} USDT or ${product.priceBTC} BTC`);
+                        const btcPrice = formatBTCPrice(product.priceUSDT);
+                        alert(`Product Details:\n\n${product.name}\nCategory: ${product.category}\nDescription: ${product.description}\n\nPrice: ${product.priceUSDT} USDT or ${btcPrice} BTC`);
                     }
                 }
             });
+            
+            // 自动刷新汇率（每5分钟）
+            setInterval(async () => {
+                await loadExchangeRate();
+            }, 5 * 60 * 1000);
         }
 
         // 页面加载完成后初始化
