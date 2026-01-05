@@ -9,7 +9,6 @@
       "category": "Motherboards",
       "description": "Intel Z790 chipset, LGA 1700 socket, DDR5 support, PCIe 5.0, ROG Specialized software support",
       "priceUSDT": 659.99,
-      "priceBTC": 0.007095,
       "icon": "fas fa-microchip",
       "image": "https://dlcdnwebimgs.asus.com.cn/files/media/29C004F7-7B1F-4EBF-9099-7168B520A0EE/v1/img/kv/pd.png",
       "badge": "Best Seller"
@@ -20,7 +19,6 @@
       "category": "CPU",
       "description": "16 cores, 32 threads, 5.7 GHz Max Boost, AM5 socket",
       "priceUSDT": 699.99,
-      "priceBTC": 0.007525,
       "icon": "fas fa-tachometer-alt",
       "image": "https://www.amd.com/content/dam/amd/en/images/products/processors/ryzen/2505503-ryzen-9-7900x.jpg",
       "badge": "New"
@@ -31,7 +29,6 @@
       "category": "GPU",
       "description": "24GB GDDR6X, DLSS 3, Ada Lovelace Architecture",
       "priceUSDT": 1619.99,
-      "priceBTC": 0.01741499,
       "icon": "fas fa-gamepad",
       "image": "https://images.nvidia.cn/aem-dam/Solutions/geforce/ada/rtx-4090/geforce-rtx-4090-product-gallery-full-screen-3840-3.jpg",
       "badge": "Limited Stock"
@@ -42,7 +39,6 @@
       "category": "RAM",
       "description": "3200MHz(id:4007)/3600Mhz(id:4010) DDR4, supports PnP automatic overclock",
       "priceUSDT": 92.99,
-      "priceBTC": 0.00099,
       "icon": "fas fa-memory",
       "image": "./fthimgs/4010.png",
       "badge": "RGB"
@@ -53,7 +49,6 @@
       "category": "SSD",
       "description": "PCIe 4.0. See more at: https://www.techpowerup.com/ssd-specs/samsung-pm9b1-256-gb.d2081",
       "priceUSDT": 179.99,
-      "priceBTC": 0.0051,
       "icon": "fas fa-hdd",
       "badge": "Fastest"
     },
@@ -63,7 +58,6 @@
       "category": "HDD",
       "description": "NAS hard drive, 7200 RPM, 256MB cache, CMR technology",
       "priceUSDT": 299.99,
-      "priceBTC": 0.0085,
       "icon": "fas fa-hdd",
       "badge": "NAS Ready"
     },
@@ -73,7 +67,6 @@
       "category": "PSU",
       "description": "1000W, 80 Plus Gold, fully modular, ATX 3.0 compatible",
       "priceUSDT": 229.99,
-      "priceBTC": 0.0065,
       "icon": "fas fa-plug",
       "badge": "ATX 3.0"
     },
@@ -83,7 +76,6 @@
       "category": "Fans",
       "description": "140mm premium fan, PWM support, ultra-quiet operation",
       "priceUSDT": 29.99,
-      "priceBTC": 0.00085,
       "icon": "fas fa-fan",
       "badge": "Quiet"
     }
