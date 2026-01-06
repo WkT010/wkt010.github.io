@@ -767,14 +767,14 @@
             // 'https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT',
             
             // 选项4: 聚合数据API (示例)
-            // 'https://web-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=BTC'
+            'https://web-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=BTC'
         ];
         
         // 当前使用的API索引
-        let currentApiIndex = 0;
+        let currentApiIndex = 4;
         
         // 备用汇率（如果所有API请求都失败时使用）
-        const FALLBACK_EXCHANGE_RATE = 65000; // 1 BTC = 65000 USDT
+        const FALLBACK_EXCHANGE_RATE = 93500; // 1 BTC = XXXXX USDT
         
         // 备用产品数据
         const FALLBACK_PRODUCTS = [
