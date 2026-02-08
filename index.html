@@ -5,95 +5,431 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AirX 官方网站 - by OctoSpace iLc 1380L SiteServer</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
+            background-color: #f8fafc;
+            color: #333;
         }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-up {
+            animation: fadeUp 0.8s ease-out forwards;
+            opacity: 0;
+        }
+
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.4s; }
+        .delay-3 { animation-delay: 0.2s; }
 
         .header {
-            background-color: #2c3e50;
+            background: linear-gradient(135deg, #2c3e50, #1a2530);
             color: white;
             text-align: center;
-            padding: 2em;
+            padding: 3em 2em;
+            position: relative;
+            overflow: hidden;
         }
 
-        .nav {
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+            animation: float 20s linear infinite;
+            opacity: 0.2;
+        }
+
+        @keyframes float {
+            from { transform: translate(0, 0); }
+            to { transform: translate(-30px, -30px); }
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 3em;
+            letter-spacing: 1px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin-top: 0.5em;
+        }
+
+        /* 导航栏容器 */
+        .nav-container {
             background-color: #34495e;
-            padding: 1em;
-            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        .nav a {
+        /* 桌面端导航栏 */
+        .desktop-nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1.2em;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .desktop-nav a {
             color: white;
             text-decoration: none;
-            margin: 0 1em;
+            margin: 0 1.5em;
+            font-weight: 500;
+            padding: 0.5em 0;
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        .desktop-nav a:hover {
+            color: #4aa7ff;
+        }
+
+        .desktop-nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #4aa7ff;
+            transition: width 0.3s;
+        }
+
+        .desktop-nav a:hover::after {
+            width: 100%;
+        }
+
+        /* 移动端导航栏 */
+        .mobile-nav-header {
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1em 1.5em;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5em;
+            cursor: pointer;
+            padding: 0.5em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .menu-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .mobile-nav {
+            display: none;
+            flex-direction: column;
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+        }
+
+        .mobile-nav.active {
+            display: flex;
+            max-height: 500px;
+        }
+
+        .mobile-nav a {
+            color: white;
+            text-decoration: none;
+            padding: 1em 1.5em;
+            font-weight: 500;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .mobile-nav a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #4aa7ff;
         }
 
         .content {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 2em;
+            padding: 3em 2em;
         }
 
         .features {
             background-color: #ecf0f1;
-            padding: 2em;
+            padding: 3em 2em;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.05);
         }
 
         .tab-card {
             background-color: white;
-            border-radius: 5px;
-            padding: 2em;
-            margin: 1em;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            padding: 2.5em;
+            margin: 1.5em 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.06);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-left: 5px solid #3498db;
+        }
+
+        .tab-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-top: 0;
+            font-size: 2.2em;
+            position: relative;
+            display: inline-block;
+            margin-bottom: 1.5em;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(to right, #3498db, #4aa7ff);
+            border-radius: 2px;
         }
 
         .buy-button {
-            background-color: #3498db;
+            background: linear-gradient(135deg, #3498db, #4aa7ff);
             color: white;
-            padding: 1em 2em;
+            padding: 1em 2.5em;
             border: none;
-            border-radius: 5px;
+            border-radius: 50px;
             cursor: pointer;
+            font-weight: 600;
+            font-size: 1em;
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: inline-block;
+            margin-top: 1em;
+        }
+
+        .buy-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
         }
 
         .aboutus {
-            background-image: url("https://www.kryptex.com/static/v2/img/assets/png/pat-wb-default-2.3810b922ea02.png"), #4aa7ff;
-            padding: 2em;
+            background: url("https://www.kryptex.com/static/v2/img/assets/png/pat-wb-default-2.3810b922ea02.png"), linear-gradient(135deg, #4aa7ff, #2c80ff);
+            background-blend-mode: overlay;
+            padding: 4em 2em;
             text-align: center;
+            color: white;
+            border-radius: 15px;
+            margin-top: 3em;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .aboutus::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.1);
+            z-index: 0;
+        }
+
+        .aboutus > * {
+            position: relative;
+            z-index: 1;
         }
 
         .payment-form {
             background-color: white;
-            padding: 2em;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px #4aa7ff;
+            padding: 2.5em;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(74, 167, 255, 0.15);
+            max-width: 600px;
+            margin: 2em auto;
+            border-top: 5px solid #4aa7ff;
+        }
+
+        a {
+            color: #4aa7ff;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: #2c80ff;
+            text-decoration: underline;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.2em;
+            }
+            
+            .desktop-nav {
+                display: none;
+            }
+            
+            .mobile-nav-header {
+                display: flex;
+            }
+            
+            .content {
+                padding: 2em 1em;
+            }
+            
+            .tab-card {
+                padding: 1.5em;
+            }
+            
+            h2 {
+                font-size: 1.8em;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .mobile-nav-header {
+                display: none;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="header">
+    <div class="header fade-up">
         <h1>AirX Studios</h1>
         <p>一个小小的、默默无闻的工作室</p>
     </div>
 
-    <div class="nav">
-        <a href="https://www.ccw.site/topic/Onesoft%E5%B7%A5%E4%BD%9C%E5%AE%A4%E5%8E%9F%E5%88%9B" target="_blank">西瓜创客官方星球</a>
-        <a href="./Phanton" target="_blank">查看和购买Phanton OS</a>
-        <a href="#aboutus">关于我们</a>
-        <a href="./nautilus/store/index.html">Nautilus Electronics Store</a>
+    <div class="nav-container">
+        <!-- 桌面端导航栏 -->
+        <nav class="desktop-nav fade-up delay-1">
+            <a href="https://www.ccw.site/topic/Onesoft%E5%B7%A5%E4%BD%9C%E5%AE%A4%E5%8E%9F%E5%88%9B" target="_blank">西瓜创客官方星球</a>
+            <a href="./Phanton" target="_blank">查看和购买Phanton OS</a>
+            <a href="#aboutus">关于我们</a>
+            <a href="./nautilus/store/index.html">Nautilus Electronics Store</a>
+        </nav>
+        
+        <!-- 移动端导航栏 -->
+        <div class="mobile-nav-header fade-up delay-1">
+            <span style="font-weight: 600; font-size: 1.1em;">AirX Studios</span>
+            <button class="menu-toggle" id="menuToggle" aria-label="切换菜单">
+                <span id="menuIcon">☰</span>
+            </button>
+        </div>
+        
+        <nav class="mobile-nav fade-up delay-1" id="mobileNav">
+            <a href="https://www.ccw.site/topic/Onesoft%E5%B7%A5%E4%BD%9C%E5%AE%A4%E5%8E%9F%E5%88%9B" target="_blank">西瓜创客官方星球</a>
+            <a href="./Phanton" target="_blank">查看和购买Phanton OS</a>
+            <a href="#aboutus" onclick="closeMobileMenu()">关于我们</a>
+            <a href="./nautilus/store/index.html">Nautilus Electronics Store</a>
+        </nav>
     </div>
+
     <div class="content" id="aboutus">
-        <section class="features" id="aboutus">
-            <bold><font face="幼圆"><h2>关于我们</h2></font></bold>
+        <section class="features fade-up delay-2">
+            <h2>关于我们</h2>
             <div class="tab-card">
-                <font face="等线"><p>AirX Studios成立于2018年12月29日，组织主体均在LinkedIn、Kryptex、GitHub等各大平台。在CCW开发方面，我们专注于使用<a class="/css/" href="https://getgandi.com/cn" target="_blank" text-decoration=none color=#4aa7ff>Scratch 3 Gandi-IDE</a>编程，作品涉及多个新兴领域。</p></font>
+                <p style="font-family: 'Microsoft YaHei', sans-serif; font-size: 1.1em; line-height: 1.6;">
+                    AirX Studios 成立于 2018 年 12 月 29 日，组织主体均在 LinkedIn、Kryptex、GitHub 等各大平台。在 CCW 开发方面，我们专注于使用
+                    <a href="https://getgandi.com/cn" target="_blank" style="font-weight: bold;">Scratch 3 Gandi-IDE</a>
+                    编程，作品涉及多个新兴领域。
+                </p>
             </div>
-            <div class="tab-card">
-                We're Nautilus Union, always providing you the best service! MoeICP: <a href="https://icp.gov.moe/?keyword=20260023" target="_blank">萌ICP备20260023号</a>
+            <div class="tab-card fade-up delay-3">
+                <p style="font-size: 1.1em; line-height: 1.6;">
+                    We're Nautilus Union, always providing you the best service!<br>
+                    MoeICP: <a href="https://icp.gov.moe/?keyword=20260023" target="_blank">萌ICP备20260023号</a>
+                </p>
             </div>
         </section>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fadeElements = document.querySelectorAll('.fade-up');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const delay = entry.target.classList.contains('delay-1') ? 200 :
+                                      entry.target.classList.contains('delay-2') ? 400 :
+                                      entry.target.classList.contains('delay-3') ? 600 : 0;
+                        setTimeout(() => {
+                            entry.target.style.animationPlayState = 'running';
+                        }, delay);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
+
+            fadeElements.forEach(el => {
+                el.style.animationPlayState = 'paused';
+                observer.observe(el);
+            });
+            const menuToggle = document.getElementById('menuToggle');
+            const mobileNav = document.getElementById('mobileNav');
+            const menuIcon = document.getElementById('menuIcon');
+            
+            function toggleMobileMenu() {
+                mobileNav.classList.toggle('active');
+                menuIcon.textContent = mobileNav.classList.contains('active') ? '✕' : '☰';
+            }
+            
+            function closeMobileMenu() {
+                mobileNav.classList.remove('active');
+                menuIcon.textContent = '☰';
+            }
+            
+            menuToggle.addEventListener('click', toggleMobileMenu);
+            const mobileNavLinks = document.querySelectorAll('.mobile-nav a');
+            mobileNavLinks.forEach(link => {
+                link.addEventListener('click', closeMobileMenu);
+            });
+            document.addEventListener('click', function(event) {
+                if (!event.target.closest('.nav-container') && window.innerWidth <= 768) {
+                    closeMobileMenu();
+                }
+            });
+        });
+    </script>
 </body>
 </html>
